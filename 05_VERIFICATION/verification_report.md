@@ -56,7 +56,7 @@ Log đầy đủ: [`simulation.log`](simulation.log)
 
 ## 4. Kiểm cấu trúc — số flip-flop
 
-Trích `../06_GDSII/synthesis/synth_stat.txt` (Yosys 0.33 (git sha1 2584903a060) + `sky130_fd_sc_hd`):
+Trích `../06_GDSII/synthesis/synth_stat.txt` (Yosys 0.52 (git sha1 fee39a3284) + `sky130_fd_sc_hd`):
 
 | Chỉ số | Giá trị |
 |---|---:|
@@ -78,8 +78,8 @@ Trích `../06_GDSII/synthesis/synth_stat.txt` (Yosys 0.33 (git sha1 2584903a060)
 Phần trả lời dựa trên số liệu đo được nằm ở:
 
 - Câu về **giao diện / tín hiệu**: `02_SPECIFICATION/interface.md`
-- Câu về **thời gian / tần số**: `06_GDSII/sta/` và `06_GDSII/physical_report.md`
-- Câu về **diện tích / tài nguyên**: `06_GDSII/physical_report.md` §2
+- Câu về **thời gian / tần số**: `06_GDSII/sta/timing_report_max.txt` và `06_GDSII/sta/wns.txt`
+- Câu về **diện tích / tài nguyên**: `06_GDSII/synthesis/synth_stat.txt`
 - Phân tích bản chất và cơ chế: `implementation-notes_A09.md`
 
 ## 6. Những gì báo cáo này **chưa** chứng minh

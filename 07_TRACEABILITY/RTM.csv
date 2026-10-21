@@ -1,0 +1,11 @@
+requirement_id,requirement_summary,implementation_evidence,verification_evidence,status
+REQ-A09-001,"Thực hiện chức năng giá trị tuyệt đối và dấu số bù 2 8-bit","04_IMPLEMENTATION/rtl/","05_VERIFICATION/simulation.log; 05_VERIFICATION/test_matrix.csv","PASS theo báo cáo mô phỏng"
+REQ-A09-002,"Giao diện đúng đặc tả","02_SPECIFICATION/interface.md; 04_IMPLEMENTATION/rtl/","Cần đối chiếu từng tín hiệu","NEEDS_REVIEW"
+REQ-A09-003,"Mạch tổ hợp, không có phần tử nhớ","04_IMPLEMENTATION/rtl/; 06_GDSII/synthesis/netlist.v","06_GDSII/synthesis/synth_stat.txt","PASS theo kết quả synthesis: 0 cell tuần tự"
+REQ-A09-004,"Quy mô cell phù hợp ước lượng Charter","06_GDSII/synthesis/netlist.v","06_GDSII/synthesis/synth_stat.txt","NEEDS_REVIEW: 18 cell, thấp hơn ước lượng 110–160; cần xác minh cách đếm và giả định Charter"
+REQ-A09-010,"Chạy các ca kiểm thử bắt buộc","05_VERIFICATION/testbench/","05_VERIFICATION/test_matrix.csv; 05_VERIFICATION/simulation.log","PASS theo báo cáo test"
+REQ-A09-011,"Có ít nhất hai ca tự xây dựng, gồm ca biên","05_VERIFICATION/testbench/","05_VERIFICATION/test_matrix.csv; 05_VERIFICATION/simulation.log","PASS theo báo cáo test; cần kiểm tra nội dung từng ca nếu yêu cầu kiểm toán chi tiết"
+REQ-A09-012,"Mỗi khẳng định có bằng chứng và điều kiện tạo bằng chứng","05_VERIFICATION/verification_report.md; 07_TRACEABILITY/limitations.md","Các log và báo cáo được dẫn chiếu","PARTIAL: một số kết quả STA và power có điều kiện, cảnh báo và giới hạn"
+REQ-A09-013,"Có artifact số kèm chú thích và điều kiện tạo","05_VERIFICATION/waveforms/; các báo cáo kiểm thử","Cần xác nhận artifact cụ thể và chú thích","NEEDS_REVIEW"
+REQ-A09-020,"Phân tích trường hợp -128 bằng dữ liệu của thiết kế","implementation-notes_A09.md; 04_IMPLEMENTATION/rtl/","05_VERIFICATION/simulation.log; 06_GDSII/synthesis/netlist.v","NEEDS_REVIEW: cần xác nhận phân tích có trích số liệu và logic phát hiện 0x80"
+REQ-A09-021,"Trả lời câu hỏi kỹ thuật Charter bằng bằng chứng","implementation-notes_A09.md; 05_VERIFICATION/verification_report.md","06_GDSII/synthesis/synth_stat.txt; 06_GDSII/sta/; 06_GDSII/power/","PARTIAL: cần bổ sung giới hạn timing và power, chưa có physical sign-off"

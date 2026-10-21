@@ -1,0 +1,9 @@
+# Lich su lenh STA tren may ca nhan
+.history_sta
+
+# File tam va file backup
+*~
+*.bak
+*.swp
+.DS_Store
+Thumbs.db

@@ -6,19 +6,19 @@
 
 > Theo danh mục đề: ui_in[7:0]=x (bù 2) · uo_out[7:0]=|x| · uio_out[0]=dấu · uio_out[1]=cờ tràn
 > Ngân sách chân: 8 bit vào + 10 bit ra = 18 trên 24 chân.
-> Ánh xạ chân đã khả thi, không phải đổi gì.
-> Một ô Tiny Tapeout có đúng 24 chân: ui_in 8 chỉ vào, uo_out 8 chỉ ra, uio 8 chọn chiều từng chân. uio_in và uio_out là cùng một bộ chân vật lý.
-
 ## 2. Bảng giao diện đã CHỐT — module `a09_abs_sign`
 
-Bảng dưới đây **đọc trực tiếp từ RTL** (`04_IMPLEMENTATION/rtl/`), không phải chép tay,
-nên luôn nhất quán với mã nguồn.
+Bảng giao diện được đối chiếu với các cổng khai báo trong
+`04_IMPLEMENTATION/rtl/a09_abs_sign.sv`.
 
-| Tín hiệu | Chiều | Độ rộng (bit) | Vai trò | Mức tích cực / giả định |
+| Tín hiệu RTL | Chiều | Độ rộng (bit) | Vai trò | Ánh xạ Charter |
 |---|---|---:|---|---|
-| _(không đọc được cổng)_ | | | | |
+| `x` | Input | 8 | Số đầu vào dạng bù 2 | `ui_in[7:0]` |
+| `abs_val` | Output | 8 | Giá trị tuyệt đối trong 8 bit | `uo_out[7:0]` |
+| `sign` | Output | 1 | `1` nếu đầu vào âm | `uio_out[0]` |
+| `ovf` | Output | 1 | `1` khi đầu vào là `0x80` (-128) | `uio_out[1]` |
 
-**Tổng hợp:** 0 cổng vào (0 bit) · 0 cổng ra (0 bit).
+**Tổng hợp:** 8 bit vào + 10 bit ra = 18 bit logic.
 
 **Không có clock** — khối tổ hợp thuần.
 
@@ -28,18 +28,17 @@ nên luôn nhất quán với mã nguồn.
 
 | Hạng mục | Số bit |
 |---|---:|
-| Tổng bit vào | **0** |
-| Tổng bit ra | **0** |
-| **Tổng cộng** | **0** |
-| Ô Tiny Tapeout có | **24** |
-| **Chênh lệch** | **24 chân còn dư** |
+| `ui_in` — đầu vào | 8 |
+| `uo_out` — đầu ra | 8 |
+| `uio_out` — đầu ra dùng chân đa hướng | 2 |
+| Tổng số chân logic được sử dụng | **18** |
+| Số chân vật lý của một tile | 24 |
+| Số chân còn dư theo phép tính ngân sách | **6** |
 
-> Nhắc lại cấu trúc chân Tiny Tapeout: một ô có đúng 24 chân — `ui_in` 8 chỉ vào,
-> `uo_out` 8 chỉ ra, `uio` 8 chọn chiều từng chân; **`uio_in` và `uio_out` là cùng một bộ
-> chân vật lý**.
 
-> ✅ Ngân sách chân **đủ**: tổng số bit logic nằm trong 24 chân vật lý, không cần
-> nạp nhiều nhịp và không phải hy sinh tín hiệu nào.
+
+
+
 
 ## 4. Điều kiện hợp lệ của đầu vào
 
