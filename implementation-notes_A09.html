@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A09 — Bộ tính giá trị tuyệt đối và dấu của số bù 2 8-bit · Ghi chú thực hiện</title>
+<style>
+:root{
+  --bg:#ffffff; --fg:#1a1d21; --muted:#5c6570; --line:#e3e7eb;
+  --accent:#1f5fa9; --accent-soft:#eef4fb; --code-bg:#f5f7f9;
+  --ok:#137a4d; --ok-bg:#e8f6ee; --warn:#8a5a00; --warn-bg:#fdf4e2;
+  --bad:#a52020; --bad-bg:#fceded; --open:#7a5ba8; --open-bg:#f3eefa;
+  --maxw:960px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15181c; --fg:#e6e9ec; --muted:#98a2ad; --line:#2a2f36;
+    --accent:#6fa8e0; --accent-soft:#1c2733; --code-bg:#1b1f24;
+    --ok:#5cc08d; --ok-bg:#16291f; --warn:#d8a54a; --warn-bg:#2a2314;
+    --bad:#e88b8b; --bad-bg:#2b1a1a; --open:#b79ad6; --open-bg:#241d2e;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15181c; --fg:#e6e9ec; --muted:#98a2ad; --line:#2a2f36;
+  --accent:#6fa8e0; --accent-soft:#1c2733; --code-bg:#1b1f24;
+  --ok:#5cc08d; --ok-bg:#16291f; --warn:#d8a54a; --warn-bg:#2a2314;
+  --bad:#e88b8b; --bad-bg:#2b1a1a; --open:#b79ad6; --open-bg:#241d2e;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--bg); color:var(--fg);
+  font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:var(--maxw); margin:0 auto; padding:0 16px 96px}
+header.doc{
+  border-bottom:1px solid var(--line); margin-bottom:28px; padding:36px 0 22px;
+}
+header.doc .eyebrow{
+  font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--muted); font-weight:600; margin-bottom:10px;
+}
+header.doc h1{font-size:clamp(24px,4.4vw,34px); line-height:1.25; margin:0 0 14px}
+.badges{display:flex; flex-wrap:wrap; gap:7px; margin-top:6px}
+.badge{
+  font-size:12.5px; padding:3px 10px; border-radius:999px;
+  border:1px solid var(--line); color:var(--muted); background:var(--accent-soft);
+  white-space:nowrap;
+}
+.badge.ok{color:var(--ok); background:var(--ok-bg); border-color:transparent}
+.badge.warn{color:var(--warn); background:var(--warn-bg); border-color:transparent}
+.badge.bad{color:var(--bad); background:var(--bad-bg); border-color:transparent}
+.badge.open{color:var(--open); background:var(--open-bg); border-color:transparent}
+nav.toc{
+  border:1px solid var(--line); border-radius:10px; padding:16px 20px;
+  margin:0 0 32px; background:var(--accent-soft);
+}
+nav.toc p{margin:0 0 8px; font-weight:700; font-size:13px; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--muted)}
+nav.toc ul{margin:0; padding-left:20px}
+nav.toc li{margin:3px 0}
+nav.toc a{color:var(--fg); text-decoration:none}
+nav.toc a:hover{color:var(--accent); text-decoration:underline}
+nav.toc ul ul{padding-left:18px; font-size:14.5px}
+h2{font-size:22px; margin:40px 0 12px; padding-bottom:6px; border-bottom:1px solid var(--line)}
+h3{font-size:18px; margin:28px 0 8px}
+h4{font-size:16px; margin:22px 0 6px; color:var(--muted)}
+p{margin:12px 0}
+a{color:var(--accent)}
+ul,ol{padding-left:24px}
+li{margin:4px 0}
+code{
+  font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  font-size:.9em; background:var(--code-bg); padding:1.5px 5px; border-radius:4px;
+}
+pre{
+  background:var(--code-bg); border:1px solid var(--line); border-radius:8px;
+  padding:14px 16px; overflow-x:auto; line-height:1.55; font-size:13.5px;
+}
+pre code{background:none; padding:0; font-size:inherit}
+blockquote{
+  margin:16px 0; padding:2px 18px; border-left:3px solid var(--accent);
+  background:var(--accent-soft); border-radius:0 8px 8px 0; color:var(--fg);
+}
+blockquote p{margin:10px 0}
+.tablewrap{overflow-x:auto; margin:16px 0; -webkit-overflow-scrolling:touch}
+table{border-collapse:collapse; width:100%; font-size:14.5px; min-width:420px}
+th,td{border:1px solid var(--line); padding:7px 11px; text-align:left; vertical-align:top}
+th{background:var(--accent-soft); font-weight:650; white-space:nowrap}
+tbody tr:nth-child(even) td{background:color-mix(in srgb, var(--code-bg) 55%, transparent)}
+hr{border:0; border-top:1px solid var(--line); margin:34px 0}
+footer.doc{
+  margin-top:56px; padding-top:18px; border-top:1px solid var(--line);
+  color:var(--muted); font-size:13.5px;
+}
+.themebtn{
+  position:fixed; right:14px; bottom:14px; z-index:10;
+  border:1px solid var(--line); background:var(--bg); color:var(--muted);
+  border-radius:999px; padding:8px 14px; font-size:13px; cursor:pointer;
+}
+.themebtn:hover{color:var(--fg)}
+@media (max-width:640px){
+  .wrap{padding:0 16px 72px}
+  header.doc{padding:26px 0 18px}
+  nav.toc{padding:14px 16px}
+}
+@media print{
+  .themebtn{display:none}
+  nav.toc{break-inside:avoid}
+  pre,table,blockquote{break-inside:avoid}
+  body{font-size:11pt}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="doc">
+  <div class="eyebrow">RTL2GDS · Đề A09 · Ghi chú thực hiện</div>
+  <h1>A09 — Bộ tính giá trị tuyệt đối và dấu của số bù 2 8-bit · Ghi chú thực hiện</h1>
+  <div class="badges"><span class="badge ">🔧 Đã thiết kế lại đúng đề</span><span class="badge ">A · Số học tổ hợp</span><span class="badge ">Độ khó: Trung bình</span><span class="badge ">Loại mạch: Tổ hợp</span><span class="badge ok">Mô phỏng: PASS</span><span class="badge ">Tổng hợp: 18 cell · 0 FF</span><span class="badge ">Đường tới hạn: 0,96 ns</span><span class="badge warn">Physical design: CHƯA CHẠY</span></div>
+</header>
+<nav class="toc"><p>Mục lục</p><ul><li><a href="#1-bai-toan-nay-thuc-chat-la-gi">1. Bài toán này thực chất là gì</a></li><li><a href="#2-ban-chat-ky-thuat-co-che-hoat-dong">2. Bản chất kỹ thuật — cơ chế hoạt động</a></li><ul><li><a href="#2-1-vi-sao-dai-bu-2-lech">2.1 Vì sao dải bù 2 lệch</a></li><li><a href="#2-2-phep-bu-2-trong-phan-cung">2.2 Phép bù 2 trong phần cứng</a></li><li><a href="#2-3-diem-mau-chot-carry-cua-bo-tang-khong-phai-chuoi-that">2.3 Điểm mấu chốt: carry của bộ TĂNG không phải chuỗi thật</a></li><li><a href="#2-4-phat-hien-128">2.4 Phát hiện −128</a></li></ul><li><a href="#3-doc-ma-nguon-rtl-lam-gi">3. Đọc mã nguồn: RTL làm gì</a></li><ul><li><a href="#dieu-tuyet-doi-khong-duoc-viet">Điều tuyệt đối không được viết</a></li></ul><li><a href="#4-vi-sao-chon-kien-truc-nay">4. Vì sao chọn kiến trúc này</a></li><li><a href="#5-cach-thuc-hien-lo-trinh-8-buoc">5. Cách thực hiện — lộ trình 8 bước</a></li><li><a href="#6-so-lieu-that-da-do-duoc-va-cach-doc-chung">6. Số liệu thật đã đo được và cách đọc chúng</a></li><ul><li><a href="#tung-con-so-chung-minh-gi-va-khong-chung-minh-gi">Từng con số chứng minh gì — và KHÔNG chứng minh gì</a></li></ul><li><a href="#7-tra-loi-cac-cau-hoi-ky-thuat-cua-charter-muc-2">7. Trả lời các câu hỏi kỹ thuật của Charter (mục 2)</a></li><ul><li><a href="#cau-1-vi-sao-128-la-truong-hop-dac-biet-va-phan-cung-phat-hien-no-bang-cach-nao">Câu 1 — Vì sao −128 là trường hợp đặc biệt, và phần cứng phát hiện nó bằng cách nào?</a></li><li><a href="#cau-2-lay-gia-tri-tuyet-doi-trong-phan-cung-la-lam-gi-va-ton-bao-nhieu-cell">Câu 2 — Lấy giá trị tuyệt đối trong phần cứng là làm gì, và tốn bao nhiêu cell?</a></li><li><a href="#cau-3-co-tran-o-day-khac-co-tran-cua-phep-cong-o-cho-nao">Câu 3 — Cờ tràn ở đây khác cờ tràn của phép cộng ở chỗ nào?</a></li></ul><li><a href="#8-tra-loi-cau-phan-tich-rieng-charter-muc-9">8. Trả lời câu phân tích riêng (Charter mục 9)</a></li><ul><li><a href="#vi-sao-la-ngoai-le-toan-hoc">① Vì sao là ngoại lệ toán học</a></li><li><a href="#phan-logic-phuc-vu-rieng-cho-viec-phat-hien">② Phần logic phục vụ riêng cho việc phát hiện</a></li><li><a href="#ba-ket-qua-dang-noi">③ Ba kết quả đáng nói</a></li></ul><li><a href="#9-nhung-cho-sinh-vien-hay-sai-va-cach-phat-hien">9. Những chỗ sinh viên hay sai và cách phát hiện</a></li><li><a href="#10-cau-hoi-mentor-nen-dat-khi-bao-ve">10. Câu hỏi mentor nên đặt khi bảo vệ</a></li><li><a href="#11-gioi-han-da-chung-minh-duoc-gi-chua-chung-minh-duoc-gi">11. Giới hạn: đã chứng minh được gì, chưa chứng minh được gì</a></li><ul><li><a href="#da-chung-minh">Đã chứng minh</a></li><li><a href="#chua-chung-minh">Chưa chứng minh</a></li><li><a href="#con-de-mo-cho-giang-vien-chot">Còn để mở — chờ giảng viên chốt</a></li><li><a href="#ngoai-pham-vi-khong-duoc-khang-dinh">Ngoài phạm vi — không được khẳng định</a></li></ul></ul></nav>
+<main>
+<blockquote>
+<p><strong>Lưu ý truy vết nguồn.</strong> Gói mã nguồn nhận ban đầu (<code>A09_Counter_Implementation_Validation</code>)
+chứa một <strong>bộ đếm 4-bit tuần tự</strong>, thuộc danh mục đề cũ, <strong>không phải</strong> đề Charter này.
+Bản gốc đã đóng băng ở <code>08_ORIGINAL_SOURCE/</code>; RTL, mô hình chuẩn và testbench đã được viết
+lại đúng đề (giảng viên duyệt). Chẩn đoán: <code>05_VERIFICATION/known_issues.md</code>.
+Nhật ký thay thế: <code>08_ORIGINAL_SOURCE/PATCHLOG.md</code>.</p>
+</blockquote>
+<hr>
+<h2 id="1-bai-toan-nay-thuc-chat-la-gi">1. Bài toán này thực chất là gì</h2>
+<p>Bề mặt: "bỏ dấu trừ đi". Nghe như một dòng code.</p>
+<p>Thực chất, Charter chọn A09 vì nó là <strong>ví dụ sạch nhất</strong> để dạy một điều rất khó dạy:
+<strong>một hệ biểu diễn số có thể không đối xứng, và sự không đối xứng đó là tính chất toán học
+chứ không phải lỗi của người thiết kế.</strong></p>
+<p>Charter mục 10 nói thẳng chỗ hay tắc: <em>"Bỏ qua ca −128 vì 'hiếm gặp'. Đó đúng là ca đề ra
+để kiểm."</em> Toàn bộ hồ sơ này tồn tại để biến câu đó từ một lời nhắc thành một <strong>phép đếm</strong>:
+trên 256 giá trị vào, có <strong>đúng 1</strong> giá trị làm cờ tràn bật, và testbench <code>$fatal</code> nếu con
+số đó khác 1.</p>
+<p>Bối cảnh ứng dụng — chuẩn hoá tín hiệu lệch tâm trong bộ đo — không phải trang trí. Nó
+quyết định câu trả lời cuối: tầng sau chỉ cần <strong>so độ lớn với ngưỡng</strong>, mà so không dấu thì
+<code>0x80 = 128</code> là <strong>đúng</strong>. Ca <code>−128</code> vì vậy không làm hỏng ứng dụng; nó chỉ đòi hỏi hợp đồng
+giao diện nói rõ <code>uo_out</code> đọc theo hệ không dấu.</p>
+<h2 id="2-ban-chat-ky-thuat-co-che-hoat-dong">2. Bản chất kỹ thuật — cơ chế hoạt động</h2>
+<h3 id="2-1-vi-sao-dai-bu-2-lech">2.1 Vì sao dải bù 2 lệch</h3>
+<p>Bù 2 <code>n</code> bit biểu diễn <code>[−2ⁿ⁻¹ … +2ⁿ⁻¹−1]</code>. Có <code>2ⁿ⁻¹</code> số âm nhưng chỉ <code>2ⁿ⁻¹−1</code> số dương,
+vì mẫu bit <code>00…0</code> đã bị số 0 chiếm — <strong>không có <code>−0</code></strong>. Chính việc "tiết kiệm" được <code>−0</code>
+(ưu điểm lớn nhất của bù 2 so với dấu-độ lớn) là thứ tạo ra sự lệch.</p>
+<p>Lấy trị tuyệt đối là ánh xạ tập âm (128 phần tử) vào tập dương (127 phần tử). Theo nguyên
+lý chuồng bồ câu, <strong>không tồn tại</strong> ánh xạ giữ nguyên độ rộng mà không mất mát. <code>−128</code> là
+phần tử bị dư ra. Điều này đúng với mọi hiện thực, phần cứng lẫn phần mềm.</p>
+<h3 id="2-2-phep-bu-2-trong-phan-cung">2.2 Phép bù 2 trong phần cứng</h3>
+<pre><code>−x = (~x) + 1
+</code></pre>
+<p>Hai bước, ánh xạ thẳng thành hai tầng phần cứng:</p>
+<pre><code>x_inv[i] = ~x[i]                          ← 8 INV, song song, độ sâu 1
+neg[i]   = x_inv[i] ^ c[i]                ← 8 XOR
+c[i+1]   = x_inv[i] &amp; c[i] ,  c[0] = 1    ← 8 AND, chuỗi carry
+</code></pre>
+<p>Rồi chọn:</p>
+<pre><code>abs_val[i] = sign ? neg[i] : x[i]         ← 8 mux 2:1, sel = x[7]
+</code></pre>
+<h3 id="2-3-diem-mau-chot-carry-cua-bo-tang-khong-phai-chuoi-that">2.3 Điểm mấu chốt: carry của bộ TĂNG không phải chuỗi thật</h3>
+<p>Khai triển <code>c[i+1]</code>:</p>
+<pre><code>c[i+1] = x_inv[i] &amp; c[i] = ~x[i] &amp; ~x[i−1] &amp; … &amp; ~x[0] = NOR(x[i], …, x[0])
+</code></pre>
+<p>Vế phải <strong>chỉ chứa các bit đầu vào</strong>. Nó là một phép <strong>thu gọn AND kết hợp</strong>, nên cây hoá
+được: thay vì 8 mức nối tiếp, công cụ dựng cây sâu ~2 mức và dùng chung tín hiệu trung gian.</p>
+<blockquote>
+<p><strong>Đây là chỗ A09 khác hẳn A01.</strong> Trong bộ cộng hai số (A01),
+<code>carry[i+1] = maj(a[i], b[i], carry[i])</code> — hàm đa số <strong>không</strong> khai triển được thành phép
+thu gọn trên đầu vào, nên chuỗi 8 tầng tồn tại thật (đo được: 1,34 ns / 8 cell). Trong
+A09, "ripple" là <strong>cách viết</strong>, không phải <strong>cấu trúc cuối cùng</strong> (đo được: 0,96 ns /
+3 cell). Hai đề dùng cùng chữ "chuỗi carry" nhưng nói về hai hiện tượng khác nhau.</p>
+</blockquote>
+<h3 id="2-4-phat-hien-128">2.4 Phát hiện <code>−128</code></h3>
+<pre><code>ovf = x[7] &amp; ~(x[6] | x[5] | x[4] | x[3] | x[2] | x[1] | x[0])
+</code></pre>
+<p>Tức "bit dấu bằng 1 <strong>và</strong> bảy bit thấp đều bằng 0" — đúng mẫu <code>0x80</code>.</p>
+<p>Cách khác cũng đúng: <code>−x == x</code> (chỉ <code>0x00</code> và <code>0x80</code> thoả), nhưng phải loại thêm trường hợp
+<code>x = 0</code>. Cách dùng mẫu bit là đặc tả trực tiếp, không cần loại trừ, và đếm được chi phí.</p>
+<h2 id="3-doc-ma-nguon-rtl-lam-gi">3. Đọc mã nguồn: RTL làm gì</h2>
+<p>Toàn bộ kiến trúc nằm trong bốn khối:</p>
+<pre><code class="language-systemverilog">assign sign = x[7];                                    // TẦNG 0 — 0 cổng
+
+for (gi = 0; gi &lt; 8; gi++)                             // TẦNG 1 — đảo bit
+    assign x_inv[gi] = ~x[gi];
+
+assign inc_c[0] = 1'b1;                                // TẦNG 2 — cộng +1
+for (gi = 0; gi &lt; 8; gi++) begin
+    assign neg[gi]     = x_inv[gi] ^ inc_c[gi];
+    assign inc_c[gi+1] = x_inv[gi] &amp; inc_c[gi];
+end
+
+for (gi = 0; gi &lt; 8; gi++)                             // TẦNG 3 — mux theo dấu
+    assign abs_val[gi] = (sign &amp; neg[gi]) | (~sign &amp; x[gi]);
+
+assign low7_zero = ~(x[6]|x[5]|x[4]|x[3]|x[2]|x[1]|x[0]);
+assign ovf       = x[7] &amp; low7_zero;                   // TẦNG 4 — phát hiện 0x80
+</code></pre>
+<p>Bốn điểm cần giảng kỹ:</p>
+<ol>
+<li><strong><code>generate for</code> là nhân bản KHÔNG GIAN.</strong> Nó tạo 8 bản sao phần cứng tồn tại đồng thời,
+   không phải 8 lần chạy tuần tự. Sinh viên quen lập trình phần mềm gần như luôn hiểu nhầm.</li>
+<li><strong><code>inc_c[0] = 1'b1</code> chính là số 1 được cộng vào.</strong> Đây là chỗ "cộng 1" biến thành phần
+   cứng: không có bộ cộng nào cả, chỉ có một carry-in bị đặt cứng.</li>
+<li><strong><code>inc_c[8]</code> khai báo nhưng không dùng.</strong> Nó chỉ bằng 1 khi <code>x = 0x00</code>, mà khi đó mux đã
+   chọn nhánh đi thẳng. Công cụ tổng hợp loại bỏ toàn bộ logic sinh nó — và đó là hành vi
+   đúng, không phải cảnh báo cần sửa.</li>
+<li><strong>Mux viết dạng tổng-của-tích, không dùng <code>? :</code>.</strong> Mục đích là để cấu trúc hiện trong mã
+   nguồn. (Sau tổng hợp mux biến mất — xem §6.)</li>
+</ol>
+<h3 id="dieu-tuyet-doi-khong-duoc-viet">Điều tuyệt đối không được viết</h3>
+<pre><code class="language-systemverilog">assign abs_val = x[7] ? -x : x;    // ❌ CẤM trong RTL nộp bài
+</code></pre>
+<p>Toán tử <code>-</code> cho phép công cụ tự chọn kiến trúc, xoá mất chính thứ Charter mục 2 và mục 9
+yêu cầu quan sát. Thực nghiệm cho thấy bản viết tắt ra <strong>đúng cùng 18 cell / 118,864 µm²</strong>
+(<code>03_ARCHITECTURE/tradeoff.md</code> §4) — tức lệnh cấm này <strong>không</strong> vì lý do diện tích, mà vì
+lý do <strong>truy vết và dạy học</strong>. Toán tử tắt chỉ được dùng trong
+<code>05_VERIFICATION/golden_model/</code>, nơi chúng là chuẩn so sánh độc lập.</p>
+<h2 id="4-vi-sao-chon-kien-truc-nay">4. Vì sao chọn kiến trúc này</h2>
+<p>Không phải vì "bù 2 vô điều kiện + mux" là kiến trúc đẹp nhất trên giấy — mà vì:</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Tiêu chí</th>
+<th>Kiến trúc đã chọn</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Charter mục 10 đòi nhìn thấy "đảo bit + cộng +1 + phát hiện 0x80"</td>
+<td>✅ Ba tầng hiện rõ, đếm được</td>
+</tr>
+<tr>
+<td>Đo được chi phí riêng của phần phát hiện <code>−128</code> (Charter mục 9)</td>
+<td>✅ Tách được: +1 cell, +6,256 µm²</td>
+</tr>
+<tr>
+<td>Diện tích</td>
+<td>✅ 118,864 µm² — nhỏ nhất trong 4 kiến trúc đã đo</td>
+</tr>
+<tr>
+<td>Độ trễ</td>
+<td>✅ 0,96 ns</td>
+</tr>
+<tr>
+<td>0 ô nhớ</td>
+<td>✅ 0 flip-flop</td>
+</tr>
+</tbody>
+</table></div>
+<p>Đáng nói: kiến trúc "tiết kiệm theo sách" (đảo bit <strong>có điều kiện</strong> + cộng carry-in = <code>sign</code>)
+đo được <strong>24 cell / 163,9 µm²</strong>, tức <strong>đắt hơn 37,9 %</strong>. Lý do: carry-in là biến nên chuỗi
+carry không rút gọn được thành phép thu gọn trên đầu vào. Phân tích đầy đủ:
+<code>03_ARCHITECTURE/tradeoff.md</code> §4.</p>
+<h2 id="5-cach-thuc-hien-lo-trinh-8-buoc">5. Cách thực hiện — lộ trình 8 bước</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Bước</th>
+<th>Công cụ</th>
+<th>Bằng chứng sinh ra</th>
+<th>Trạng thái</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Phát hiện gói nguồn thuộc đề khác, đóng băng bản gốc</td>
+<td><code>diff</code>, đọc RTL</td>
+<td><code>05_VERIFICATION/known_issues.md</code></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Suy đặc tả từ Charter mục 1/2/4/8/9/10</td>
+<td>—</td>
+<td><code>02_SPECIFICATION/functional_spec.md</code></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Viết mô hình chuẩn Python độc lập (8 bất biến)</td>
+<td>CPython 3</td>
+<td><code>python_reference_run.log</code></td>
+<td>✅ PASS</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Viết RTL với bù 2 và mux <strong>tường minh</strong></td>
+<td>—</td>
+<td><code>04_IMPLEMENTATION/rtl/a09_abs_sign.sv</code></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Viết testbench tự kiểm + quét vét cạn 256</td>
+<td>Icarus Verilog 12.0</td>
+<td><code>simulation.log</code></td>
+<td>✅ 266 vector / 0 lỗi</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Tổng hợp lên sky130, <strong>kiểm 0 flip-flop</strong></td>
+<td>Yosys 0.33</td>
+<td><code>synth_stat.txt</code></td>
+<td>✅ 18 cell, 0 FF</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Đo chi phí riêng của cờ tràn (tổng hợp 2 bản) + so 4 kiến trúc</td>
+<td>Yosys 0.33</td>
+<td><code>03_ARCHITECTURE/tradeoff.md</code> §3–4</td>
+<td>✅ +1 cell</td>
+</tr>
+<tr>
+<td>8</td>
+<td>STA với clock ảo, đọc đường tới hạn</td>
+<td>OpenSTA</td>
+<td><code>06_GDSII/sta/</code></td>
+<td>✅ 0,96 ns</td>
+</tr>
+<tr>
+<td>—</td>
+<td>Physical design RTL→GDSII</td>
+<td>LibreLane + sky130A</td>
+<td><code>06_GDSII/</code></td>
+<td>⬜ chưa chạy</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="6-so-lieu-that-da-do-duoc-va-cach-doc-chung">6. Số liệu thật đã đo được và cách đọc chúng</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Chỉ số</th>
+<th style="text-align: right;">Giá trị</th>
+<th>Công cụ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vector kiểm chứng</td>
+<td style="text-align: right;">266 chạy, <strong>256/256</strong> vét cạn khớp, 0 lỗi</td>
+<td>Icarus Verilog 12.0</td>
+</tr>
+<tr>
+<td>Vi phạm bất biến</td>
+<td style="text-align: right;"><strong>0</strong></td>
+<td>như trên</td>
+</tr>
+<tr>
+<td>Số ca làm <code>ovf = 1</code></td>
+<td style="text-align: right;"><strong>1 / 256</strong> (đúng <code>x = −128</code>)</td>
+<td>như trên</td>
+</tr>
+<tr>
+<td>Số cell</td>
+<td style="text-align: right;"><strong>18</strong></td>
+<td>Yosys 0.33 + <code>sky130_fd_sc_hd</code></td>
+</tr>
+<tr>
+<td><strong>Flip-flop</strong></td>
+<td style="text-align: right;"><strong>0</strong></td>
+<td>như trên</td>
+</tr>
+<tr>
+<td>Diện tích</td>
+<td style="text-align: right;"><strong>118,864 µm²</strong></td>
+<td>như trên</td>
+</tr>
+<tr>
+<td>Bản không có <code>ovf</code></td>
+<td style="text-align: right;">17 cell · 112,608 µm²</td>
+<td>như trên</td>
+</tr>
+<tr>
+<td>Đường tới hạn</td>
+<td style="text-align: right;"><code>x[0] → abs_val[6]</code>, 3 cell</td>
+<td>OpenSTA</td>
+</tr>
+<tr>
+<td><strong>Độ trễ tổ hợp</strong></td>
+<td style="text-align: right;"><strong>0,96 ns</strong> (slack 9,04 ns so <code>vclk</code> 10 ns)</td>
+<td>như trên</td>
+</tr>
+<tr>
+<td>Đường nhanh nhất</td>
+<td style="text-align: right;"><code>x[7] → sign</code>, <strong>0,00 ns</strong>, 0 cell</td>
+<td>như trên</td>
+</tr>
+<tr>
+<td>WNS / TNS</td>
+<td style="text-align: right;">0,00 / 0,00</td>
+<td>như trên</td>
+</tr>
+<tr>
+<td>Công suất</td>
+<td style="text-align: right;"><strong>3,00 µW</strong> — 100 % tổ hợp, 0 % tuần tự</td>
+<td>như trên</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="tung-con-so-chung-minh-gi-va-khong-chung-minh-gi">Từng con số chứng minh gì — và KHÔNG chứng minh gì</h3>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Con số</th>
+<th><strong>Chứng minh</strong></th>
+<th><strong>KHÔNG chứng minh</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>256/256 khớp</td>
+<td>Hàm của DUT <strong>tương đương</strong> golden model trên toàn bộ không gian đầu vào</td>
+<td>Kiến trúc là "bù 2 + mux". Bản viết tắt bằng toán tử cũng PASS 256/256</td>
+</tr>
+<tr>
+<td>0 flip-flop</td>
+<td>Đúng phân loại Tổ hợp của Charter, xác nhận bởi <strong>ba nguồn độc lập</strong> (bảng cell, công suất Sequential 0 %, TC-011)</td>
+<td>Netlist tương đương RTL — cần mô phỏng gate-level</td>
+</tr>
+<tr>
+<td>18 cell · 118,864 µm²</td>
+<td>Lấy trị tuyệt đối 8-bit là phép <strong>rất rẻ</strong> — nhỏ hơn 6–9 lần ước lượng 110–160 cell của Charter</td>
+<td>Diện tích sau P&amp;R (sẽ khác vì có dây và cell bị <code>dont_use</code>)</td>
+</tr>
+<tr>
+<td>+1 cell cho <code>ovf</code></td>
+<td>Chi phí phát hiện <code>−128</code> ở mức sau tổng hợp</td>
+<td>Chi phí sau P&R; và chi phí này có thể về 0 nếu cho phép nối chung chân</td>
+</tr>
+<tr>
+<td>0,96 ns</td>
+<td>Độ trễ <strong>ở mức sau tổng hợp</strong>, góc <code>tt_025C_1v80</code></td>
+<td>Độ trễ thật sau routing (sẽ <strong>lớn hơn</strong>, chưa có RC dây)</td>
+</tr>
+<tr>
+<td>3,00 µW</td>
+<td>Thứ tự độ lớn công suất</td>
+<td>Công suất thật của ứng dụng — dùng activity mặc định, không lấy từ VCD</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="7-tra-loi-cac-cau-hoi-ky-thuat-cua-charter-muc-2">7. Trả lời các câu hỏi kỹ thuật của Charter (mục 2)</h2>
+<h3 id="cau-1-vi-sao-128-la-truong-hop-dac-biet-va-phan-cung-phat-hien-no-bang-cach-nao">Câu 1 — Vì sao <code>−128</code> là trường hợp đặc biệt, và phần cứng phát hiện nó bằng cách nào?</h3>
+<p><strong>Vì sao đặc biệt:</strong> dải bù 2 8 bit là <code>[−128 … +127]</code>, không đối xứng vì bù 2 không có
+<code>−0</code>. <code>|−128| = +128</code> không nằm trong dải <strong>có dấu</strong>. Đây là tính chất của hệ biểu diễn,
+không phải lỗi thiết kế (chi tiết §2.1 và §8).</p>
+<p><strong>Phần cứng phát hiện bằng cách nào:</strong> dò <strong>mẫu bit</strong> <code>0x80</code> —
+<code>ovf = x[7] &amp; NOR(x[6:0])</code>. Sau tổng hợp nó là <strong>đúng một cell</strong>
+<code>_12_ sky130_fd_sc_hd__nor4_1</code>, và cell đó có bốn chân vào <strong>giống hệt</strong> cell <code>_26_</code> đang
+lái <code>abs_val[7]</code>.</p>
+<p>Một cách phát hiện tương đương, rất đáng nói khi bảo vệ: <strong><code>−128</code> là giá trị âm duy nhất mà
+phép bù 2 trả về chính nó</strong> (<code>−(−128) = −128</code> trong 8 bit). Nghĩa là <code>ovf</code> cũng có thể viết
+là <code>sign &amp; (neg == x)</code>. Hai cách cho cùng kết quả trên 256/256 — RTL dùng cách mẫu bit vì nó
+đếm được chi phí rõ ràng hơn.</p>
+<h3 id="cau-2-lay-gia-tri-tuyet-doi-trong-phan-cung-la-lam-gi-va-ton-bao-nhieu-cell">Câu 2 — Lấy giá trị tuyệt đối trong phần cứng là làm gì, và tốn bao nhiêu cell?</h3>
+<p><strong>Làm gì:</strong> đảo toàn bộ bit, cộng 1, rồi chọn giữa kết quả đó và số gốc theo bit dấu.</p>
+<p><strong>Tốn bao nhiêu:</strong> <strong>18 cell · 118,864 µm² · 0 flip-flop</strong>, chia ra:</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Phần</th>
+<th>Chi phí đo được</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tách bit dấu (<code>sign</code>)</td>
+<td><strong>0 cell</strong> — <code>assign sign = x[7];</code>, 0,00 ns</td>
+</tr>
+<tr>
+<td>Bù 2 + mux (<code>abs_val</code>)</td>
+<td>17 cell · 112,608 µm²</td>
+</tr>
+<tr>
+<td>Phát hiện <code>−128</code> (<code>ovf</code>)</td>
+<td><strong>1 cell</strong> <code>nor4_1</code> · 6,256 µm² (+5,56 %)</td>
+</tr>
+</tbody>
+</table></div>
+<p>Cách đo: tổng hợp hai bản cùng script, chỉ khác có/không có <code>ovf</code>, rồi trừ.</p>
+<h3 id="cau-3-co-tran-o-day-khac-co-tran-cua-phep-cong-o-cho-nao">Câu 3 — Cờ tràn ở đây khác cờ tràn của phép cộng ở chỗ nào?</h3>
+<p>Khác về <strong>bản chất thông tin</strong>, không chỉ khác công thức.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>Cờ <code>V</code> của phép cộng (A01)</th>
+<th>Cờ <code>ovf</code> của A09</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Nguyên nhân</td>
+<td>Kết quả thật cần <strong>9 bit</strong>, bit thứ 9 bị mất</td>
+<td>Kết quả thật là <code>+128</code>, vừa <strong>8 bit không dấu</strong></td>
+</tr>
+<tr>
+<td>Dữ liệu ra</td>
+<td><strong>Sai</strong> — không khôi phục được từ 8 bit còn lại</td>
+<td><strong>Đúng</strong> — <code>0x80</code> đọc không dấu đúng bằng 128</td>
+</tr>
+<tr>
+<td>Ý nghĩa cờ</td>
+<td>"Con số này hỏng, đừng dùng"</td>
+<td>"Đừng đọc con số này theo hệ có dấu nữa"</td>
+</tr>
+<tr>
+<td>Số ca kích hoạt</td>
+<td>Phụ thuộc cả hai toán hạng, rất nhiều tổ hợp</td>
+<td><strong>Đúng 1 / 256</strong> giá trị vào</td>
+</tr>
+<tr>
+<td>Có thể tránh bằng cách nới độ rộng?</td>
+<td>Có — cộng trong 9 bit là hết tràn</td>
+<td>Không cần — 8 bit <strong>không dấu</strong> đã đủ</td>
+</tr>
+</tbody>
+</table></div>
+<p>Nói gọn: <code>V</code> là cờ <strong>mất mát dữ liệu</strong>; <code>ovf</code> của A09 là cờ <strong>đổi hệ diễn giải</strong>. Bằng chứng
+định lượng cho vế "không mất dữ liệu": bất biến INV-1 (<code>unsigned(abs_val) == |x|</code>) đúng
+<strong>256/256</strong>, kể cả tại <code>x = −128</code> — không cần ngoại lệ.</p>
+<h2 id="8-tra-loi-cau-phan-tich-rieng-charter-muc-9">8. Trả lời câu phân tích riêng (Charter mục 9)</h2>
+<blockquote>
+<p><em>"Giải thích vì sao trường hợp −128 là ngoại lệ toán học chứ không phải lỗi thiết kế, và
+chỉ ra phần logic nào trong báo cáo tổng hợp phục vụ riêng cho việc phát hiện nó."</em></p>
+</blockquote>
+<h3 id="vi-sao-la-ngoai-le-toan-hoc">① Vì sao là ngoại lệ toán học</h3>
+<p>Đếm phần tử: bù 2 8 bit có <strong>128</strong> giá trị âm và <strong>127</strong> giá trị dương. Trị tuyệt đối là
+ánh xạ từ tập 128 phần tử vào tập 127 phần tử — <strong>không tồn tại</strong> ánh xạ đơn ánh nào giữ
+nguyên độ rộng và hệ biểu diễn. Sự lệch này sinh ra từ việc bù 2 không có <code>−0</code>, tức từ
+chính ưu điểm của hệ. Không có cách viết RTL nào xoá được nó.</p>
+<p>Bằng chứng nó <strong>không</strong> phải lỗi thiết kế: kết quả <code>0x80</code> vẫn <strong>đúng</strong> về số học khi đọc
+không dấu (<code>= 128</code>). Đo được: INV-1 đúng 256/256, <strong>không loại trừ ca nào</strong>. Nếu đây là
+lỗi thiết kế thì phải có ít nhất một giá trị cho kết quả sai — không có giá trị nào như vậy.</p>
+<h3 id="phan-logic-phuc-vu-rieng-cho-viec-phat-hien">② Phần logic phục vụ riêng cho việc phát hiện</h3>
+<p>Đo bằng cách tổng hợp hai bản cùng script, chỉ khác có/không có đầu ra <code>ovf</code>:</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Phiên bản</th>
+<th style="text-align: right;">Cell</th>
+<th style="text-align: right;">Diện tích (µm²)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Không có <code>ovf</code></td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">112,608</td>
+</tr>
+<tr>
+<td>Có <code>ovf</code></td>
+<td style="text-align: right;"><strong>18</strong></td>
+<td style="text-align: right;"><strong>118,864</strong></td>
+</tr>
+<tr>
+<td><strong>Chênh</strong></td>
+<td style="text-align: right;"><strong>+1 cell</strong></td>
+<td style="text-align: right;"><strong>+6,256 µm² (+5,56 % ; 5,26 % tổng diện tích)</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>Cell đó là <code>_12_</code> trong <code>06_GDSII/synthesis/netlist.v</code>:</p>
+<pre><code class="language-verilog">sky130_fd_sc_hd__nor4_1 _12_ (.A(x[4]), .B(x[5]), .C(_01_), .D(_02_), .Y(ovf));
+sky130_fd_sc_hd__nor4_1 _26_ (.A(x[4]), .B(x[5]), .C(_01_), .D(_02_), .Y(abs_val[7]));
+//  _01_ = or4(x[0],x[1],x[2],x[3])   ;   _02_ = nand2b(A_N=x[6], B=x[7])
+//  =&gt; Y = ~(x4|x5|(x0|x1|x2|x3)|~(~x6 &amp; x7)) = (x == 8'h80)
+</code></pre>
+<h3 id="ba-ket-qua-dang-noi">③ Ba kết quả đáng nói</h3>
+<p><strong>① Logic phát hiện <code>−128</code> là bản SAO của logic đã có sẵn.</strong> <code>_12_</code> và <code>_26_</code> cùng hàm,
+cùng chân vào, khác đúng chân ra. Nghĩa là <code>ovf ≡ abs_val[7]</code> — bit cao nhất của kết quả
+<strong>chính là</strong> cờ tràn. Chi phí 6,256 µm² tồn tại <strong>chỉ vì</strong> hai chân ra vật lý khác nhau;
+về mặt logic, phát hiện <code>−128</code> <strong>miễn phí</strong>. Đây là bằng chứng cấu trúc (đọc netlist),
+mạnh hơn bằng chứng mô phỏng, và khớp đúng với bất biến INV-6 đã đặt ra <strong>trước</strong> khi tổng hợp.</p>
+<p>STA còn cho bằng chứng thứ ba, độc lập với cả hai: <code>report_checks -to</code> cho <code>ovf</code> và
+<code>abs_val[7]</code> <strong>đúng cùng một arrival 0,74 ns</strong> và cùng startpoint <code>x[0]</code> — hai chân ra của
+hai cell tương đương thì không thể khác nhau về thời gian. Bảng đầy đủ từng chân:
+<code>03_ARCHITECTURE/timing_diagram.md</code> §4.</p>
+<p><strong>② Chuỗi ripple 8 tầng trong RTL không tồn tại trong netlist.</strong> Đường tới hạn chỉ 3 cell /
+0,96 ns, vì carry của bộ <strong>tăng</strong> rút gọn thành <code>NOR(x[i−1..0])</code> — phép thu gọn trên đầu
+vào, cây hoá được. So sánh trực tiếp với A01 (bộ cộng hai số, cùng thư viện, cùng script):
+<strong>8 cell / 1,34 ns</strong>. Kết luận về độ sâu <strong>bắt buộc</strong> đọc từ netlist + STA, không suy từ RTL.</p>
+<p><strong>③ Công suất xác nhận lại "0 ô nhớ" một cách độc lập.</strong> <code>report_power</code> cho <strong>100 %</strong> công
+suất thuộc nhóm Combinational, <strong>0 %</strong> Sequential, <strong>0 %</strong> Clock — nguồn bằng chứng khác với
+bảng cell của Yosys, cùng một kết luận.</p>
+<h2 id="9-nhung-cho-sinh-vien-hay-sai-va-cach-phat-hien">9. Những chỗ sinh viên hay sai và cách phát hiện</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Sai lầm</th>
+<th>Hậu quả</th>
+<th>Phát hiện bằng bằng chứng nào</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Bỏ qua ca <code>−128</code> vì "hiếm gặp"</td>
+<td>Trượt đúng ca Charter mục 10 nêu tên</td>
+<td>Testbench đếm số ca tràn và <code>$fatal</code> nếu khác 1</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Viết <code>assign abs_val = x[7] ? -x : x;</code></td>
+<td>Mất khả năng quan sát cấu trúc; không trả lời được mục 9</td>
+<td>Đọc RTL; và không tách được chi phí của <code>ovf</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td>Tưởng <code>abs_val = 0x80</code> là <strong>sai</strong></td>
+<td>Kết luận ngược: coi ngoại lệ toán học thành lỗi</td>
+<td>INV-1 đúng 256/256 khi đọc không dấu</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Đọc <code>uo_out</code> theo hệ <strong>có dấu</strong></td>
+<td>Ra <code>−128</code> thay vì <code>+128</code>, sai dấu ngay tại ca cần đúng</td>
+<td>🟡 OPEN-1 trong <code>functional_spec.md</code> §5.3</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Bão hoà về <code>0x7F</code> cho "an toàn"</td>
+<td>Vi phạm Charter mục 3 (ngoài phạm vi), phá INV-1, +10,5 % diện tích</td>
+<td><code>tradeoff.md</code> §4 kiến trúc D</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Mở rộng đầu ra thành 9 bit</td>
+<td>Vi phạm Charter mục 3; và <strong>không cần</strong> vì <code>\|x\| ≤ 128</code> vừa 8 bit không dấu</td>
+<td><code>tradeoff.md</code> §5</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Viết <code>ovf = sign</code> (cứ âm là tràn)</td>
+<td>Sai 127/128 số âm</td>
+<td>TC-005 (<code>−64</code>) vs TC-004 (<code>−128</code>) — chỉ khác 1 bit</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Tin rằng "8 tầng ripple trong RTL ⟹ 8 tầng trong chip"</td>
+<td>Ước lượng độ trễ sai gấp ~3 lần</td>
+<td>STA: 3 cell / 0,96 ns, không phải 8</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Kết luận "mô phỏng PASS ⟹ kiến trúc đúng"</td>
+<td>Kiểm chứng chức năng mù về cấu trúc</td>
+<td>Bản viết tắt bằng toán tử cũng PASS 256/256</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Coi <code>sign</code> là tín hiệu <strong>điều khiển</strong></td>
+<td>Hiểu sai phân loại mạch</td>
+<td><code>control.md</code> §2 — <code>sign</code> sinh từ dữ liệu; netlist không còn cell mux</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Đặt thanh ghi chốt đầu ra <strong>vào lõi</strong></td>
+<td>Đổi loại mạch sang Tuần tự, vi phạm Charter mục 10</td>
+<td><code>synth_stat.txt</code> sẽ có cell <code>__dfxtp</code>; <code>report_power</code> có Sequential ≠ 0 %</td>
+</tr>
+<tr>
+<td>12</td>
+<td>So số cell của A09 với đề khác</td>
+<td>Hai đề có thể chạy môi trường khác</td>
+<td><code>02_SPECIFICATION/parameters.md</code> — điều kiện tạo bằng chứng</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="10-cau-hoi-mentor-nen-dat-khi-bao-ve">10. Câu hỏi mentor nên đặt khi bảo vệ</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Câu hỏi</th>
+<th>Đáp án mong đợi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Vì sao <code>−128</code> là ca đặc biệt?</td>
+<td>Dải bù 2 không đối xứng (128 số âm, 127 số dương) vì không có <code>−0</code>. <code>+128</code> không nằm trong dải có dấu. Là tính chất hệ biểu diễn, không phải lỗi.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Vậy khối này trả về gì khi <code>x = −128</code>, và có sai không?</td>
+<td>Trả <code>0x80</code> và bật <code>ovf</code>. <strong>Không sai</strong>: <code>0x80</code> đọc không dấu đúng bằng 128. INV-1 đúng 256/256, không loại trừ ca nào.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Vì sao không bão hoà về <code>0x7F</code> cho gọn?</td>
+<td>Charter mục 3 đặt bão hoà ngoài phạm vi; nó cố ý trả sai 1 đơn vị tại đúng ca cần kiểm; và tốn thêm 5 cell (+10,5 %).</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Vì sao không mở đầu ra thành 9 bit?</td>
+<td>Charter mục 3 loại; và <strong>không cần</strong> — <code>\|x\| ∈ [0,128]</code> vừa khít 8 bit không dấu. 9 bit chỉ cần nếu muốn kết quả vẫn là số <strong>có dấu</strong> hợp lệ.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Chỉ ra trong báo cáo tổng hợp phần logic phát hiện <code>−128</code>.</td>
+<td>Cell <code>_12_ sky130_fd_sc_hd__nor4_1</code>, 6,256 µm², = +1 cell so với bản không có <code>ovf</code>. Nó là bản sao của <code>_26_</code> đang lái <code>abs_val[7]</code>.</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>ovf</code> có mang thông tin gì mà <code>abs_val</code> chưa có không?</td>
+<td>Không. <code>ovf ≡ abs_val[7]</code> — chứng minh ở netlist (hai cell cùng hàm, cùng chân vào) và ở INV-6 (256/256).</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Cờ tràn ở đây khác cờ <code>V</code> của bộ cộng thế nào?</td>
+<td><code>V</code> báo <strong>mất dữ liệu</strong> (kết quả cần 9 bit); <code>ovf</code> báo <strong>đổi hệ diễn giải</strong> (dữ liệu vẫn đúng khi đọc không dấu).</td>
+</tr>
+<tr>
+<td>8</td>
+<td>RTL viết 8 tầng ripple — chip có 8 tầng không?</td>
+<td>Không. STA cho 3 cell / 0,96 ns. Carry của bộ <strong>tăng</strong> là <code>NOR(x[i−1..0])</code>, phép thu gọn trên đầu vào nên cây hoá được. Khác hẳn carry của bộ <strong>cộng</strong> (A01: 8 cell / 1,34 ns).</td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>sign</code> lái mux — đó có phải tín hiệu điều khiển không?</td>
+<td>Không. Nó tính từ chính dữ liệu (<code>x[7]</code>), không đến từ ngoài, không có trạng thái. Sau tổng hợp mux còn tan vào XOR.</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Lấy bit dấu tốn bao nhiêu cell?</td>
+<td><strong>0</strong>. Netlist ghi <code>assign sign = x[7];</code>, STA cho đường <code>x[7] → sign</code> dài 0,00 ns.</td>
+</tr>
+<tr>
+<td>11</td>
+<td>256/256 PASS — đã chứng minh kiến trúc đúng chưa?</td>
+<td>Chưa. Kiểm chứng chức năng mù về cấu trúc; bản viết tắt bằng toán tử cũng PASS và còn ra <strong>đúng cùng diện tích</strong>. Bằng chứng kiến trúc phải đọc từ RTL và netlist.</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Làm sao chắc khối không có ô nhớ?</td>
+<td>Ba nguồn độc lập: bảng cell (0 FF), công suất (Sequential 0 %), và TC-011 (đầu ra không phụ thuộc lịch sử).</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Con số 0,96 ns có phải độ trễ thật của chip không?</td>
+<td>Không. Độ trễ <strong>sau tổng hợp</strong>, chưa có RC dây, một góc PVT. Sau routing sẽ lớn hơn.</td>
+</tr>
+<tr>
+<td>14</td>
+<td>Charter ước lượng 110–160 cell, bạn đo 18 — ai sai?</td>
+<td>Không ai sai. Ước lượng là "đặt chỗ" cho ô 1×1 tile; 18 là số đo thật với <code>sky130_fd_sc_hd</code> và Yosys 0.33. Phải báo cáo cả hai và nói rõ số nào là số đo.</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="11-gioi-han-da-chung-minh-duoc-gi-chua-chung-minh-duoc-gi">11. Giới hạn: đã chứng minh được gì, chưa chứng minh được gì</h2>
+<h3 id="da-chung-minh">Đã chứng minh</h3>
+<ol>
+<li>Hàm của A09 đúng trên <strong>toàn bộ</strong> không gian đầu vào (256/256, 0 lỗi, 0 vi phạm bất biến).</li>
+<li>Mười bất biến của đặc tả luôn giữ, trong đó INV-1 (<code>unsigned(abs_val) == |x|</code>) đúng <strong>kể
+   cả tại <code>x = −128</code></strong>.</li>
+<li>Ba hiện thực độc lập (Python, SV reference, RTL) đồng ý với nhau.</li>
+<li><strong>0 ô nhớ</strong> — xác nhận bởi ba bằng chứng độc lập (bảng cell, báo cáo công suất, TC-011).</li>
+<li>Lấy trị tuyệt đối 8-bit là phép <strong>rất rẻ</strong>: 18 cell · 118,864 µm², nhỏ hơn 6–9 lần ước
+   lượng 110–160 cell của Charter.</li>
+<li>Phần <strong>dấu</strong> tốn <strong>0 cell</strong>; phần <strong>phát hiện <code>−128</code></strong> tốn <strong>1 cell</strong> (6,256 µm²) và là
+   bản sao của cell lái <code>abs_val[7]</code>.</li>
+<li>Chuỗi ripple trong RTL <strong>không</strong> tồn tại trong netlist: 3 cell / 0,96 ns, so với A01
+   8 cell / 1,34 ns trên cùng thư viện.</li>
+<li>Kiến trúc "đảo bit có điều kiện" đắt hơn <strong>37,9 %</strong> so với kiến trúc đã chọn.</li>
+</ol>
+<h3 id="chua-chung-minh">Chưa chứng minh</h3>
+<ol>
+<li>Netlist tương đương RTL về chức năng — cần mô phỏng gate-level.</li>
+<li>Độ trễ <strong>thật sau routing</strong> — 0,96 ns chưa tính ký sinh dây.</li>
+<li>Biên an toàn qua các góc PVT — mới chạy <code>tt_025C_1v80</code>.</li>
+<li>Công suất thật của ứng dụng — 3,00 µW dùng activity mặc định, không lấy từ VCD.</li>
+<li>Hành vi glitch thật trên <code>abs_val</code> — cần gate-level + SDF.</li>
+<li>Layout tuân thủ quy tắc chế tạo (DRC), khớp netlist (LVS), và có file GDSII.</li>
+</ol>
+<h3 id="con-de-mo-cho-giang-vien-chot">Còn để mở — chờ giảng viên chốt</h3>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Điểm mở</th>
+<th>Xem</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OPEN-1</td>
+<td><code>uo_out</code> đọc theo hệ <strong>không dấu</strong> — cần ghi vào hợp đồng giao diện</td>
+<td><code>functional_spec.md</code> §5.3</td>
+</tr>
+<tr>
+<td>OPEN-2</td>
+<td>Tầng ngoài xử lý thế nào khi <code>ovf = 1</code></td>
+<td>như trên</td>
+</tr>
+<tr>
+<td>OPEN-3</td>
+<td>Có giữ chân <code>ovf</code> riêng không, khi nó trùng <code>abs_val[7]</code></td>
+<td>như trên</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="ngoai-pham-vi-khong-duoc-khang-dinh">Ngoài phạm vi — không được khẳng định</h3>
+<p>"Đã sign-off", "đã tape-out", "đã chế tạo", "đã kiểm tra sau chế tạo", "chạy được ở XXX MHz".
+Charter mục 3 loại tất cả khỏi phạm vi đề tài.</p>
+<hr>
+<p><em>Phiên bản: v2.0 (thiết kế lại đúng đề Charter) · Ngày: 2026-09-24</em></p>
+</main>
+<footer class="doc">
+  Tài liệu sinh từ <code>implementation-notes_A09.md</code>.
+  Mọi số liệu đều kèm công cụ, phiên bản và lệnh tái lập trong
+  <code>07_TRACEABILITY/evidence_index.md</code>.
+</footer>
+</div>
+<script>
+(function(){
+  var b=document.createElement('button');
+  b.className='themebtn'; b.type='button';
+  function lbl(){var t=document.documentElement.getAttribute('data-theme');
+    return t==='dark'?'Nen sang':(t==='light'?'Nen toi':'Doi nen');}
+  b.textContent=lbl();
+  try{var s=localStorage.getItem('rtl2gds-theme'); if(s)document.documentElement.setAttribute('data-theme',s);}catch(e){}
+  b.textContent=lbl();
+  b.addEventListener('click',function(){
+    var cur=document.documentElement.getAttribute('data-theme');
+    var mq=window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var next=cur?(cur==='dark'?'light':'dark'):(mq?'light':'dark');
+    document.documentElement.setAttribute('data-theme',next);
+    try{localStorage.setItem('rtl2gds-theme',next);}catch(e){}
+    b.textContent=lbl();
+  });
+  document.body.appendChild(b);
+})();
+</script>
+</body>
+</html>

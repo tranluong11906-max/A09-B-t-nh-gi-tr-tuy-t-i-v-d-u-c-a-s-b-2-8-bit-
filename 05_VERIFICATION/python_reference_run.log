@@ -1,0 +1,71 @@
+========================================================================
+  A09 . MO HINH CHUAN PYTHON - tri tuyet doi va dau cua so bu 2 8-bit
+  Khong gian dau vao: 2^8 = 256 gia tri  => quet VET CAN duoc
+========================================================================
+
+------------------------------------------------------------------------
+  Mo hinh TUNG BIT == mo hinh TOAN HOC tren 256 gia tri
+------------------------------------------------------------------------
+    da so khop : 256 gia tri
+    lech       : 0
+    ==> bu 2 tuong minh == dinh nghia toan hoc : DUNG
+
+------------------------------------------------------------------------
+  Ca co ten . Charter muc 8 + ca tu xay dung (10 vector)
+------------------------------------------------------------------------
+    TC-001 so 0 - khong co -0           x=00000000 val=    0 | abs=00000000 (  0) sign=0 ovf=0 | carry 8 tang  [PASS]
+    TC-002 bien duong lon nhat +127     x=01111111 val=  127 | abs=01111111 (127) sign=0 ovf=0 | carry 1 tang  [PASS]
+    TC-003 -1 - nhanh bu 2, carry nong  x=11111111 val=   -1 | abs=00000001 (  1) sign=1 ovf=0 | carry 1 tang  [PASS]
+    TC-004 -128 - CA BIEN TRONG TAM     x=10000000 val= -128 | abs=10000000 (128) sign=1 ovf=1 | carry 8 tang  [PASS]
+    TC-005 -64 - so am binh thuong      x=11000000 val=  -64 | abs=01000000 ( 64) sign=1 ovf=0 | carry 7 tang  [PASS]
+    TC-006 BIEN -127 sat ca -128        x=10000001 val= -127 | abs=01111111 (127) sign=1 ovf=0 | carry 1 tang  [PASS]
+    TC-007 BIEN +1 duong nho nhat       x=00000001 val=    1 | abs=00000001 (  1) sign=0 ovf=0 | carry 1 tang  [PASS]
+    TC-008 +64 doi xung voi TC-005      x=01000000 val=   64 | abs=01000000 ( 64) sign=0 ovf=0 | carry 7 tang  [PASS]
+    TC-009 -86 mau bit xen ke           x=10101010 val=  -86 | abs=01010110 ( 86) sign=1 ovf=0 | carry 2 tang  [PASS]
+    TC-010 +85 mau bit xen ke nghich    x=01010101 val=   85 | abs=01010101 ( 85) sign=0 ovf=0 | carry 1 tang  [PASS]
+
+------------------------------------------------------------------------
+  Bat bien INV-1..INV-8 tren toan bo 256 gia tri dau vao
+------------------------------------------------------------------------
+    INV-1  abs_val (khong dau) == |val(x)| voi MOI x       256 lan, 0 vi pham
+    INV-2  sign == x[7]                                    256 lan, 0 vi pham
+    INV-3  ovf == (x == 0x80)                              256 lan, 0 vi pham
+    INV-4  sign=0 => abs_val == x                          128 lan, 0 vi pham
+    INV-5  sign=1 => abs_val == (~x + 1) mod 256           128 lan, 0 vi pham
+    INV-6  ovf == abs_val[7]                               256 lan, 0 vi pham
+    INV-7  ovf=0 => abs_val <= 127                         256 lan, 0 vi pham
+    INV-8  |x| == |-x| voi moi x khac -128                 255 lan, 0 vi pham
+
+    So gia tri lam ovf = 1 : 1  (phai dung bang 1, tai x = 0x80)
+    TONG so lan kiem bat bien                             1791 lan
+
+------------------------------------------------------------------------
+  Do dinh luong . do sau lan truyen carry cua bo cong +1
+------------------------------------------------------------------------
+    Do sau carry sau nhat  : 8 tang
+    Xay ra tai             : 0x80
+
+    Quy luat do duoc: carry vao tang i bang ~x[0] & ... & ~x[i-1], nen
+    so tang carry THUC SU lan = (vi tri bit 1 thap nhat cua x) + 1.
+      x = 0xFF (   -1) -> carry lan 1 tang
+      x = 0x81 ( -127) -> carry lan 1 tang
+      x = 0xAA (  -86) -> carry lan 2 tang
+      x = 0xC0 (  -64) -> carry lan 7 tang
+      x = 0x80 ( -128) -> carry lan 8 tang
+
+    Ghi chu: ca -128 (0x80) vua la ca QUAN TRONG NHAT ve ngu nghia,
+    vua la ca SAU NHAT ve chuoi carry (8 tang). Hai ca NONG nhat cua
+    nhanh am la -1 (0xFF) va -127 (0x81), moi ca chi 1 tang.
+    (Bang o corner_cases.md muc 3.1 ghi nguoc chieu o bon hang
+     TC-003/004/005/006 - xem PATCHLOG muc 8.)
+
+========================================================================
+  TONG KET
+========================================================================
+  Gia tri da quet vet can  : 256
+  Vector co ten            : 10
+  Lan kiem bat bien        : 1791
+  So phep kiem             : 21
+  So phep kiem that bai    : 0
+
+  A09 REFERENCE MODEL: PASS - 21/21 phep kiem dat, 0 sai lech

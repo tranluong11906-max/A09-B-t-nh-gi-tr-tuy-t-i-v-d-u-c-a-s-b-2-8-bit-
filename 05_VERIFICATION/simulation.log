@@ -1,0 +1,61 @@
+VCD info: dumpfile a09_waves.vcd opened for output.
+======================================================================
+  A09 . TESTBENCH - Tri tuyet doi va dau cua so bu 2 8-bit
+  DUT: a09_abs_sign   Chuan: a09_reference
+======================================================================
+
+[1a] Ca bat buoc cua Charter muc 8
+----------------------------------------------------------------------
+  TC-001 so 0 - khong co -0          x=00000000 val=   0 | abs=00000000 (  0) sign=0 ovf=0  [PASS]
+  TC-002 bien duong lon nhat +127    x=01111111 val= 127 | abs=01111111 (127) sign=0 ovf=0  [PASS]
+  TC-003 -1 nhanh bu 2, carry nong   x=11111111 val=  -1 | abs=00000001 (  1) sign=1 ovf=0  [PASS]
+  TC-004 -128 CA BIEN TRONG TAM      x=10000000 val=-128 | abs=10000000 (128) sign=1 ovf=1  [PASS]
+  TC-005 -64 so am binh thuong       x=11000000 val= -64 | abs=01000000 ( 64) sign=1 ovf=0  [PASS]
+
+[1b] Ca tu xay dung - co ca bien
+----------------------------------------------------------------------
+  TC-006 BIEN -127 sat ca -128       x=10000001 val=-127 | abs=01111111 (127) sign=1 ovf=0  [PASS]
+  TC-007 BIEN +1 duong nho nhat      x=00000001 val=   1 | abs=00000001 (  1) sign=0 ovf=0  [PASS]
+  TC-008 +64 doi xung voi TC-005     x=01000000 val=  64 | abs=01000000 ( 64) sign=0 ovf=0  [PASS]
+  TC-009 -86 mau bit xen ke          x=10101010 val= -86 | abs=01010110 ( 86) sign=1 ovf=0  [PASS]
+  TC-010 +85 mau bit xen ke nghich   x=01010101 val=  85 | abs=01010101 ( 85) sign=0 ovf=0  [PASS]
+
+  Vector co ten da chay: 10
+
+[2] Quet vet can toan bo khong gian dau vao (2^8 = 256 gia tri)
+----------------------------------------------------------------------
+  Da quet: 256/256 gia tri, sai lech: 0
+
+[2b] Phep dem co tran tren toan bo khong gian
+----------------------------------------------------------------------
+  So gia tri lam ovf = 1 : 1
+  ==> dung MOT gia tri trong 256, tai x = 0x80 (-128) : DUNG
+  (loi khang dinh "chi -128 moi tran" da thanh mot phep dem)
+
+[2c] Do sau chuoi carry cua bo cong +1 (doc net dut.inc_c)
+----------------------------------------------------------------------
+  Do sau carry sau nhat : 8 tang, tai x = 0x80 (-128)
+  ==> ca -128 vua QUAN TRONG NHAT ve ngu nghia, vua SAU NHAT
+      ve chuoi carry. Hai ca NONG nhat cua nhanh am la -1 (0xFF)
+      va -127 (0x81), moi ca 1 tang.
+
+[4] TC-011 / INV-9 - khong phu thuoc lich su dau vao
+----------------------------------------------------------------------
+  x=0x80 sau lich su 0x00 -> abs=80 sign=1 ovf=1
+  x=0x80 sau lich su 0x7F -> abs=80 sign=1 ovf=1
+  ==> trung khit : DUNG (mach to hop thuan, 0 o nho)
+
+======================================================================
+  TONG KET A09
+======================================================================
+  Vector co ten            : 10
+  Vector quet vet can      : 256/256
+  TONG SO VECTOR           : 266
+  Sai lech so voi chuan    : 0
+  Lan kiem bat bien        : 1597
+  Vi pham bat bien         : 0
+  Gia tri lam ovf = 1      : 1 (x = 0x80 = -128)
+  Flip-flop trong RTL      : 0 (khong co always_ff, khong co clk/rst)
+
+  KET QUA A09: PASS - 266 vector, 0 sai lech, 1597 lan kiem bat bien, 0 vi pham
+05_VERIFICATION/testbench/a09_tb.sv:428: $finish called at 398000 (1ps)
