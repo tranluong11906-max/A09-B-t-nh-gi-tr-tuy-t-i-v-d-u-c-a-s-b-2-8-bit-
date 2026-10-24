@@ -7,3 +7,9 @@
 *.swp
 .DS_Store
 Thumbs.db
+
+# Ket qua sinh ra khi chay OpenLane
+04_IMPLEMENTATION/openlane1/runs/
+
+# File waveform sinh ra khi mo phong
+a09_waves.vcd
