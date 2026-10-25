@@ -25,6 +25,13 @@ jobs:
           echo "======================================"
           cat ACTIVITY_LOG.md
 
+      - name: Show command history
+        run: |
+          echo "======================================"
+          echo " A09 - Command History"
+          echo "======================================"
+          cat COMMAND_HISTORY.md
+
       - name: Show recent Git commits
         run: |
           echo "======================================"
