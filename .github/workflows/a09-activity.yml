@@ -1,0 +1,43 @@
+name: A09 Activity History
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  activity-log:
+    name: Display A09 project activity
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Show project activity log
+        run: |
+          echo "======================================"
+          echo " A09 - RTL to GDSII Activity History"
+          echo "======================================"
+          cat ACTIVITY_LOG.md
+
+      - name: Show recent Git commits
+        run: |
+          echo "======================================"
+          echo " Recent project commits"
+          echo "======================================"
+          git log -10 --oneline
+
+      - name: Show project stages
+        run: |
+          echo "1. Project setup and RTL"
+          echo "2. RTL verification"
+          echo "3. Yosys synthesis"
+          echo "4. OpenSTA timing analysis"
+          echo "5. OpenLane RTL-to-GDSII"
+          echo "6. DRC and LVS checks"
+          echo "7. KLayout layout inspection"
