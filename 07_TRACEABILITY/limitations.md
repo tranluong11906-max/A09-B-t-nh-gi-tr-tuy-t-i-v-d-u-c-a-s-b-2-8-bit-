@@ -48,19 +48,21 @@ Leakage power: 3.17e-11 W (xấp xỉ 0,0317 nW).
 
 Đây là ước lượng theo mô hình và điều kiện đầu vào hiện có. Chưa có bằng chứng cho thấy báo cáo sử dụng hoạt động chuyển mạch thực tế từ VCD/SAIF hoặc ký sinh sau routing; vì vậy không xem đây là kết quả công suất sign-off.
 
-5. Các hạng mục chưa có bằng chứng
+5. Trạng thái bằng chứng thiết kế vật lý
 
-Tại thời điểm lập tài liệu này, chưa xác nhận có kết quả cho:
+Đã tìm thấy các đầu ra từ lần chạy OpenLane 1 tại:
+`04_IMPLEMENTATION/openlane1/runs/a09_run1/`.
 
-Place & route hoàn chỉnh.
+- GDSII cuối cùng: `results/signoff/a09_abs_sign.gds`.
+- Báo cáo DRC: `reports/signoff/drc.rpt`, ghi nhận `COUNT: 0`.
+- Báo cáo LVS: `reports/signoff/47-a09_abs_sign.lvs.rpt`, ghi nhận không có sai lệch và tổng số lỗi bằng 0.
 
-GDSII cuối cùng sau routing.
+Các kết quả trên được ghi nhận theo những file báo cáo đã kiểm tra; không suy rộng thành bảo đảm cho các điều kiện hoặc lần chạy khác.
 
-Timing sau layout với ký sinh đã trích xuất.
+Các hạng mục chưa có đủ bằng chứng để kết luận PASS:
 
-Kiểm tra DRC và LVS.
-
-Mô phỏng gate-level hoặc post-layout dùng SDF.
+- Timing sign-off sau layout với ký sinh đã trích xuất.
+- Mô phỏng gate-level hoặc post-layout sử dụng SDF.
 
 Không kết luận các hạng mục trên đã PASS khi chưa có log và kết quả tương ứng.
 
