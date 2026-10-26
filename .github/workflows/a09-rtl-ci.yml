@@ -1,0 +1,38 @@
+name: A09 RTL Verification
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rtl-test:
+    name: Compile and simulate A09
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Icarus Verilog
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y iverilog
+
+      - name: Compile RTL and testbench
+        run: |
+          iverilog -g2012 -s a09_tb -o /tmp/a09_ci_test.vvp \
+            04_IMPLEMENTATION/rtl/a09_abs_sign.sv \
+            05_VERIFICATION/golden_model/a09_reference.sv \
+            05_VERIFICATION/testbench/a09_tb.sv
+
+      - name: Run A09 verification
+        run: |
+          set -o pipefail
+          vvp /tmp/a09_ci_test.vvp | tee /tmp/a09_ci_test.log
+          grep -F "KET QUA A09: PASS - 266 vector, 0 sai lech, 1597 lan kiem bat bien, 0 vi pham" /tmp/a09_ci_test.log
